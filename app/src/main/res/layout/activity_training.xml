@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_main"
+    android:fitsSystemWindows="true"
+    tools:context=".TrainingActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#00FFFFFF"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:backgroundTint="@android:color/transparent"
+            android:titleTextColor="#FFFCF2" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/form_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foregroundTint="#FFFCF2"
+            android:hint="Название тренировки"
+            android:textColorHint="#FFFCF2"
+            app:boxBackgroundMode="outline"
+            app:boxCollapsedPaddingTop="0dp"
+            app:boxStrokeColor="#FFFCF2"
+            app:cursorColor="#FFFCF2"
+            app:hintAnimationEnabled="false"
+            app:hintTextColor="#FFFCF2">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/training_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#FFFCF2"
+                android:drawableTint="#FFFCF2"
+                android:foregroundTint="#FFFCF2"
+                android:shadowColor="#FFFCF2"
+                android:textColor="#FFFCF2"
+                android:textColorHighlight="#FFFCF2"
+                android:textColorHint="#FFFCF2"
+                android:textColorLink="#FFFCF2"
+                app:boxBackgroundColor="@android:color/transparent"
+                app:boxStrokeColor="#FFFCF2"
+                app:hintTextColor="#FFFCF2" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Тип тренировки"
+            android:textColorHint="#FFFCF2"
+            app:boxBackgroundMode="outline"
+            app:boxCollapsedPaddingTop="0dp"
+            app:boxStrokeColor="#FFFCF2"
+            app:cursorColor="#FFFCF2"
+            app:hintAnimationEnabled="false"
+            app:hintTextColor="#FFFCF2">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/training_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#FFFCF2"
+                android:drawableTint="#FFFCF2"
+                android:foregroundTint="#FFFCF2"
+                android:shadowColor="#FFFCF2"
+                android:textColor="#FFFCF2"
+                android:textColorHighlight="#FFFCF2"
+                android:textColorHint="#FFFCF2"
+                android:textColorLink="#FFFCF2"
+                app:boxBackgroundColor="@android:color/transparent"
+                app:boxStrokeColor="#FFFCF2"
+                app:hintTextColor="#FFFCF2" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Продолжительность (мин.)"
+            android:textColorHint="#FFFCF2"
+            app:boxBackgroundMode="outline"
+            app:boxCollapsedPaddingTop="0dp"
+            app:boxStrokeColor="#FFFCF2"
+            app:cursorColor="#FFFCF2"
+            app:hintAnimationEnabled="false"
+            app:hintTextColor="#FFFCF2">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/training_duration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:backgroundTint="#FFFCF2"
+                android:drawableTint="#FFFCF2"
+                android:foregroundTint="#FFFCF2"
+                android:shadowColor="#FFFCF2"
+                android:textColor="#FFFCF2"
+                android:textColorHighlight="#FFFCF2"
+                android:textColorHint="#FFFCF2"
+                android:textColorLink="#FFFCF2"
+                app:boxBackgroundColor="@android:color/transparent"
+                app:boxStrokeColor="#FFFCF2"
+                app:hintTextColor="#FFFCF2" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Уровень сложности"
+            android:textColorHint="#FFFCF2"
+            app:boxBackgroundMode="outline"
+            app:boxCollapsedPaddingTop="0dp"
+            app:boxStrokeColor="#FFFCF2"
+            app:cursorColor="#FFFCF2"
+            app:hintAnimationEnabled="false"
+            app:hintTextColor="#FFFCF2">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/training_difficulty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#FFFCF2"
+                android:drawableTint="#FFFCF2"
+                android:foregroundTint="#FFFCF2"
+                android:shadowColor="#FFFCF2"
+                android:textColor="#FFFCF2"
+                android:textColorHighlight="#FFFCF2"
+                android:textColorHint="#FFFCF2"
+                android:textColorLink="#FFFCF2"
+                app:boxBackgroundColor="@android:color/transparent"
+                app:boxStrokeColor="#FFFCF2"
+                app:hintTextColor="#FFFCF2" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btn_add_training"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#EB5E28"
+            android:text="Добавить тренировку"
+            android:textColor="#FFFFFF"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/training_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="24dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
