@@ -20,7 +20,8 @@ public class StatsActivity extends AppCompatActivity {
                 View.SYSTEM_UI_FLAG_FULLSCREEN |   // Скрыть статус-бар
                         View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |  // Скрыть панель навигации
                         View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY // Чтобы панель не появлялась снова
-        );
 
+        );
+        int x;
     }
 }
