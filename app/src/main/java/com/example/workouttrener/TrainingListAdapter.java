@@ -34,13 +34,23 @@ public class TrainingListAdapter extends RecyclerView.Adapter<TrainingListAdapte
         Training training = trainingList.get(position);
         holder.name.setText(training.getName());
         holder.duration.setText(String.valueOf(training.getDuration()));
+        
+        // Удаляем старый слушатель
+        holder.checkBox.setOnCheckedChangeListener(null);
+        // Устанавливаем состояние чекбокса
         holder.checkBox.setChecked(training.isSelected());
 
         // Слушатель изменения состояния чекбокса
         holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            training.setSelected(isChecked);  // Обновляем модель данных
+            // Обновляем модель данных
+            training.setSelected(isChecked);
             Log.d("TrainingAdapter", "Training " + training.getName() + " checked: " + isChecked);
-            listener.onItemClick();  // Уведомление активности о том, что нужно пересчитать время
+            
+            // Уведомляем о изменении только конкретного элемента
+            if (listener != null) {
+                listener.onItemClick();
+                notifyItemChanged(position);
+            }
         });
     }
 

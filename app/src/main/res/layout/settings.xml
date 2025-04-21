@@ -22,7 +22,6 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-
         app:layout_constraintVertical_bias="0.422" />
 
     <TextView
@@ -34,7 +33,7 @@
         android:text="Здесь можно сбросить все записи тренировок и статистики."
         android:textSize="16sp"
         android:textColor="#F2FFFFFC"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/clear_database_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.545"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,18 +41,15 @@
         app:layout_constraintVertical_bias="0.234" />
 
     <Button
-        android:id="@+id/btn_reset_all"
+        android:id="@+id/clear_database_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         android:backgroundTint="#EB5E28"
-        android:text="Сбросить все данные"
+        android:text="Очистить все данные"
         android:textColor="#FFFFFF"
-        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.827" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
