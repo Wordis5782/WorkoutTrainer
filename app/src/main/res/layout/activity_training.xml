@@ -155,9 +155,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:backgroundTint="#EB5E28"
-            android:text="Добавить тренировку"
-            android:textColor="#FFFFFF"
-            />
+            android:text="Добавить упражнение"
+            android:textColor="#FFFFFF" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/training_list"

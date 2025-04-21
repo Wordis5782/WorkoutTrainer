@@ -1,60 +1,87 @@
 package com.example.workouttrener;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+public class TrainingListAdapter extends RecyclerView.Adapter<TrainingListAdapter.TrainingListViewHolder> {
 
-public class TrainingListAdapter extends RecyclerView.Adapter<TrainingListAdapter.TrainingListViewHolder>{
-
-
-    private Context context;
     private List<Training> trainingList;
+    private final OnItemClickListener listener;
 
-    public TrainingListAdapter(List<Training> trainingList, Context context)
-    {
+    public TrainingListAdapter(List<Training> trainingList, OnItemClickListener listener) {
         this.trainingList = trainingList;
-        this.context = context;
-    }
-    @Override
-    public TrainingListAdapter.TrainingListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_training, parent, false);
-        return new TrainingListAdapter.TrainingListViewHolder(view);
+        this.listener = listener;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TrainingListViewHolder holder, int position) {
+    public TrainingListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_training, parent, false);
+        return new TrainingListViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(TrainingListViewHolder holder, int position) {
         Training training = trainingList.get(position);
         holder.name.setText(training.getName());
-        holder.type.setText(training.getType());
         holder.duration.setText(String.valueOf(training.getDuration()));
-        holder.difficulty.setText(training.getDifficulty());
+        
+        // Удаляем старый слушатель
+        holder.checkBox.setOnCheckedChangeListener(null);
+        // Устанавливаем состояние чекбокса
+        holder.checkBox.setChecked(training.isSelected());
 
+        // Слушатель изменения состояния чекбокса
+        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // Обновляем модель данных
+            training.setSelected(isChecked);
+            Log.d("TrainingAdapter", "Training " + training.getName() + " checked: " + isChecked);
+            
+            // Уведомляем о изменении только конкретного элемента
+            if (listener != null) {
+                listener.onItemClick();
+                notifyItemChanged(position);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return trainingList.size();
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick();  // Сигнал для обновления данных активности
     }
 
     public static class TrainingListViewHolder extends RecyclerView.ViewHolder {
-        TextView name, type, duration, difficulty;
+        TextView name;
+        TextView duration;
+        CheckBox checkBox;
 
         public TrainingListViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.training_name);
-            type = itemView.findViewById(R.id.training_type);
             duration = itemView.findViewById(R.id.training_duration);
-            difficulty = itemView.findViewById(R.id.training_difficulty);
+            checkBox = itemView.findViewById(R.id.checkbox_select);
         }
+    }
+
+    public void setTrainingList(List<Training> trainingList) {
+        this.trainingList = trainingList;
+        notifyDataSetChanged();  // Оповещаем адаптер, что данные изменились
+    }
+
+    public List<Training> getTrainingList() {
+        return trainingList;
     }
 }
