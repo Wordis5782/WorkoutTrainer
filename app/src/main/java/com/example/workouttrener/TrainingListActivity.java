@@ -2,7 +2,7 @@ package com.example.workouttrener;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,10 +10,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrainingListActivity extends AppCompatActivity {
+import android.util.Log;
+
+public class TrainingListActivity extends AppCompatActivity implements TrainingListAdapter.OnItemClickListener {
 
     private RecyclerView recyclerView;
     private TextView totalDurationTextView;
+    private Button startButton;
     private List<Training> trainingList;
     private TrainingListAdapter adapter;
 
@@ -21,40 +24,73 @@ public class TrainingListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.training_list);
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_FULLSCREEN |   // Скрыть статус-бар
-                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |  // Скрыть панель навигации
-                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY // Чтобы панель не появлялась снова
-        );
+
         recyclerView = findViewById(R.id.training_list);
         totalDurationTextView = findViewById(R.id.total_time);
+        startButton = findViewById(R.id.button);
 
-        trainingList = getMockTrainings();
+        trainingList = new ArrayList<>();
+        adapter = new TrainingListAdapter(trainingList, this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        ArrayAdapter<Training> adapter = new ArrayAdapter<Training>(
-                this,
-                R.layout.item_training,
-                getMockTrainings()
-        );
-        updateTotalDuration();
+        recyclerView.setAdapter(adapter);
+
+        loadTrainingsFromDatabase();
+
+        // Делаем кнопку неактивной по умолчанию
+        startButton.setEnabled(false);
+        startButton.setOnClickListener(v -> {
+
+        });
+    }
+
+    private void loadTrainingsFromDatabase() {
+        AppDatebase db = AppDatebase.getInstance(this);
+        TrainingDAO trainingDao = db.trainingDAO();
+
+        new Thread(() -> {
+            try {
+                List<Training> loadedTrainings = trainingDao.getAll();
+                runOnUiThread(() -> {
+                    adapter.setTrainingList(loadedTrainings);
+                    updateTotalDuration(); // Обновляем счетчик времени
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    @Override
+    public void onItemClick() {
+        Log.d("TrainingActivity", "onItemClick triggered");
+        updateTotalDuration(); // Обновляем общее время
+        adapter.notifyDataSetChanged();
     }
 
     private void updateTotalDuration() {
-        int total = 0;
-        for (Training t : trainingList) {
-            if (t.isSelected()) {
-                total += t.getDuration();
+        int totalDuration = 0;
+        boolean anySelected = false;
+
+        // Получаем актуальный список тренировок из адаптера
+        trainingList = adapter.getTrainingList();
+
+        // Считаем общее время для выбранных тренировок
+        for (Training training : trainingList) {
+            if (training.isSelected()) {
+                totalDuration += training.getDuration();
+                anySelected = true;
             }
         }
-        totalDurationTextView.setText("Общее время: " + total + " мин");
-    }
 
-    private List<Training> getMockTrainings() {
-        List<Training> list = new ArrayList<>();
-        list.add(new Training("Кардио", "Аэробика", 20, "Средняя"));
-        list.add(new Training("Силовая", "Тренажеры", 30, "Сложная"));
-        list.add(new Training("Растяжка", "Йога", 15, "Легкая"));
-        return list;
+        // Обновляем текст в TextView
+        int finalTotalDuration = totalDuration;
+        boolean finalAnySelected = anySelected;
+        runOnUiThread(() -> {
+            totalDurationTextView.setText("Общее время: " + finalTotalDuration + " мин");
+
+            // Включаем/выключаем кнопку в зависимости от того, выбрана ли хотя бы одна тренировка
+            startButton.setEnabled(finalAnySelected);
+        });
     }
 }

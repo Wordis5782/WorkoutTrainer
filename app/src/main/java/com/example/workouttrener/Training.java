@@ -1,6 +1,11 @@
 package com.example.workouttrener;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+@Entity(tableName = "trainings")
 public class Training {
+    @PrimaryKey(autoGenerate = true)
+    public int id;
     private String name;
     private String type;
     private int duration;
@@ -12,6 +17,8 @@ public class Training {
         this.duration = duration;
         this.difficulty = difficulty;
     }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

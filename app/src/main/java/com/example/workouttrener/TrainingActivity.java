@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.workouttrener.databinding.ActivityTrainingBinding;
 import com.google.android.material.textfield.TextInputEditText;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class TrainingActivity extends AppCompatActivity {
     private List<Training> trainings;
     private TrainingAdapter adapter;
     private Integer editingIndex = null;
+    private  TrainingDAO trainingDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,44 +73,64 @@ public class TrainingActivity extends AppCompatActivity {
         binding.toolbar.setTitleTextColor(Color.parseColor("#FFFCF2"));
         getSupportActionBar().setTitle("Workout Trainer");
 
+        //Room DB
+        AppDatebase db = AppDatebase.getInstance(this);
+        trainingDao = db.trainingDAO();
+        new Thread(() -> {
+            List<Training> loadedTrainings = trainingDao.getAll();
+            runOnUiThread(() -> {
+                trainings.clear();
+                trainings.addAll(loadedTrainings);
+                adapter.notifyDataSetChanged();
+            });
+        }).start();
+
         // Обработчик клика на кнопку "Добавить тренировку"
         addButton.setOnClickListener(v -> {
-            String name = nameField.getText().toString();
-            String type = typeField.getText().toString();
+            String name = nameField.getText().toString().trim();
+            String type = typeField.getText().toString().trim();
+            String difficulty = difficultyField.getText().toString().trim();
+
             int duration = 0;
             try {
-                duration = Integer.parseInt(durationField.getText().toString()); // Парсим длительность
+                duration = Integer.parseInt(durationField.getText().toString().trim());
             } catch (NumberFormatException e) {
-                e.printStackTrace(); // В случае ошибки, например, если ввели не число, оставляем duration равным 0
+                Snackbar.make(v, "Введите корректную длительность!", Snackbar.LENGTH_SHORT).show();
+                return;
             }
-            String difficulty = difficultyField.getText().toString();
 
-            // Проверяем на дубликаты
-            if (isDuplicate(name)) {
-                // Если тренировка с таким названием уже существует
+            // Проверка на дубликат
+            if (isDuplicate(name) && editingIndex == null) {
                 Snackbar.make(v, "Тренировка с таким названием уже существует!", Snackbar.LENGTH_SHORT).show();
                 return;
             }
 
-            if (editingIndex != null) {
-                // Если индекс не равен null, редактируем существующую тренировку
-                Training t = trainings.get(editingIndex);
-                t.setName(name);
-                t.setType(type);
-                t.setDuration(duration);
-                t.setDifficulty(difficulty);
-                editingIndex = null; // Сброс индекса редактирования
-                addButton.setText("Добавить тренировку");
-            } else {
-                // Добавляем новую тренировку в список
-                trainings.add(new Training(name, type, duration, difficulty));
-            }
+            Training newTraining = new Training(name, type, duration, difficulty);
 
-            // Очищаем поля ввода
-            clearFields();
+            new Thread(() -> {
+                if (editingIndex != null) {
+                    // Редактируем
+                    newTraining.setId(trainings.get(editingIndex).getId());
+                    trainingDao.update(newTraining);
+                } else {
+                    // Добавляем новую
+                    long id = trainingDao.insert(newTraining);
+                    newTraining.setId((int) id);
+                }
 
-            // Обновляем адаптер
-            adapter.notifyDataSetChanged();
+                runOnUiThread(() -> {
+                    if (editingIndex != null) {
+                        trainings.set(editingIndex, newTraining);
+                        editingIndex = null;
+                        addButton.setText("Добавить тренировку");
+                    } else {
+                        trainings.add(newTraining);
+                    }
+
+                    adapter.notifyDataSetChanged();
+                    clearFields();
+                });
+            }).start();
         });
     }
 
