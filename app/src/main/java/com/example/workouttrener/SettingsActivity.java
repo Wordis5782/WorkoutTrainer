@@ -39,6 +39,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void clearDatabase() {
         new Thread(() -> {
             try {
+                // Очищаем все таблицы
                 db.trainingDAO().deleteAll();
                 db.trainingStatsDAO().deleteAll();
                 
@@ -46,6 +47,7 @@ public class SettingsActivity extends AppCompatActivity {
                     Toast.makeText(this, "Все данные успешно удалены", Toast.LENGTH_SHORT).show();
                 });
             } catch (Exception e) {
+                e.printStackTrace();
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Ошибка при удалении данных", Toast.LENGTH_SHORT).show();
                 });
