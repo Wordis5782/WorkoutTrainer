@@ -8,9 +8,9 @@ import java.util.Date;
 public class TrainingStats {
     @PrimaryKey(autoGenerate = true)
     public int id;
-    public int exerciseCount;
-    public int totalDuration;
-    public Date date;
+    private int exerciseCount;
+    private int totalDuration;
+    private Date date;
 
     public TrainingStats(int exerciseCount, int totalDuration, Date date) {
         this.exerciseCount = exerciseCount;

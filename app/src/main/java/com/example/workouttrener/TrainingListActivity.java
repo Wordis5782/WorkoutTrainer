@@ -1,67 +1,134 @@
 package com.example.workouttrener;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
-public class TrainingListActivity extends AppCompatActivity {
+import android.util.Log;
+
+public class TrainingListActivity extends AppCompatActivity implements TrainingListAdapter.OnItemClickListener {
+
     private RecyclerView recyclerView;
+    private TextView totalDurationTextView;
+    private Button startButton;
+    private List<Training> trainingList;
     private TrainingListAdapter adapter;
-    private List<Training> trainingList = new ArrayList<>();
-    private TrainingDAO trainingDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.training_list);
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_FULLSCREEN |
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        );
 
-        recyclerView = findViewById(R.id.training_recycler);
-        trainingDao = AppDatebase.getInstance(this).trainingDAO();
+        recyclerView = findViewById(R.id.training_list);
+        totalDurationTextView = findViewById(R.id.total_time);
+        startButton = findViewById(R.id.button);
 
-        adapter = new TrainingListAdapter(trainingList, this::onTrainingClick);
+        trainingList = new ArrayList<>();
+        adapter = new TrainingListAdapter(trainingList, this);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        loadTrainings();
+        loadTrainingsFromDatabase();
+
+        // Делаем кнопку неактивной по умолчанию
+        startButton.setEnabled(false);
+        startButton.setOnClickListener(v -> {
+            // Сохраняем статистику тренировки
+            saveTrainingStats();
+            
+            // Сбрасываем выбранные тренировки
+            for (Training training : trainingList) {
+                training.setSelected(false);
+            }
+            adapter.notifyDataSetChanged();
+            updateTotalDuration();
+            
+            // Завершаем активность
+            finish();
+        });
     }
 
-    private void loadTrainings() {
+    private void loadTrainingsFromDatabase() {
+        AppDatebase db = AppDatebase.getInstance(this);
+        TrainingDAO trainingDao = db.trainingDAO();
+
         new Thread(() -> {
             try {
-                List<Training> trainings = trainingDao.getAll();
+                List<Training> loadedTrainings = trainingDao.getAll();
                 runOnUiThread(() -> {
-                    trainingList.clear();
-                    trainingList.addAll(trainings);
-                    adapter.notifyDataSetChanged();
+                    adapter.setTrainingList(loadedTrainings);
+                    updateTotalDuration(); // Обновляем счетчик времени
                 });
             } catch (Exception e) {
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Ошибка при загрузке тренировок", Toast.LENGTH_SHORT).show();
-                });
+                e.printStackTrace();
             }
         }).start();
     }
 
-    private void onTrainingClick(Training training) {
-        Intent intent = new Intent(this, TrainingActivity.class);
-        intent.putExtra("training_id", training.id);
-        startActivity(intent);
+    private void saveTrainingStats() {
+        int selectedCount = 0;
+        int totalDuration = 0;
+
+        for (Training training : trainingList) {
+            if (training.isSelected()) {
+                selectedCount++;
+                totalDuration += training.getDuration();
+            }
+        }
+
+        if (selectedCount > 0) {
+            TrainingStats stats = new TrainingStats(selectedCount, totalDuration, new Date());
+            AppDatebase db = AppDatebase.getInstance(this);
+            TrainingStatsDAO statsDao = db.trainingStatsDAO();
+
+            new Thread(() -> {
+                try {
+                    statsDao.insert(stats);
+                    Log.d("TrainingListActivity", "Stats saved successfully");
+                } catch (Exception e) {
+                    Log.e("TrainingListActivity", "Error saving stats: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }).start();
+        }
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        loadTrainings();
+    public void onItemClick() {
+        Log.d("TrainingActivity", "onItemClick triggered");
+        // Обновляем только общее время
+        updateTotalDuration();
+    }
+
+    private void updateTotalDuration() {
+        int totalDuration = 0;
+        boolean anySelected = false;
+
+        // Получаем актуальный список тренировок из адаптера
+        trainingList = adapter.getTrainingList();
+
+        // Считаем общее время для выбранных тренировок
+        for (Training training : trainingList) {
+            if (training.isSelected()) {
+                totalDuration += training.getDuration();
+                anySelected = true;
+            }
+        }
+
+        // Обновляем текст в TextView
+        int finalTotalDuration = totalDuration;
+        boolean finalAnySelected = anySelected;
+        runOnUiThread(() -> {
+            totalDurationTextView.setText("Общее время: " + finalTotalDuration + " мин");
+            startButton.setEnabled(finalAnySelected);
+        });
     }
 }

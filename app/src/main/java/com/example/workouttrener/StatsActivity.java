@@ -22,9 +22,9 @@ public class StatsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stats);
         getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_FULLSCREEN |
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                View.SYSTEM_UI_FLAG_FULLSCREEN |   // Скрыть статус-бар
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |  // Скрыть панель навигации
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY // Чтобы панель не появлялась снова
         );
 
         recyclerView = findViewById(R.id.statistics_recycler);
@@ -49,6 +49,7 @@ public class StatsActivity extends AppCompatActivity {
                     updateEmptyState();
                 });
             } catch (Exception e) {
+                e.printStackTrace();
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Ошибка при загрузке статистики", Toast.LENGTH_SHORT).show();
                 });
